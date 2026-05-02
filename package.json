@@ -1,0 +1,27 @@
+{
+  "name": "opencode-caveman-plugin",
+  "version": "1.0.0",
+  "description": "OpenCode plugin that adds a 'Caveman mode' toggle per project — aggressive language compression with preserved technical accuracy",
+  "main": "dist/caveman.js",
+  "types": "dist/caveman.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "opencode",
+    "plugin",
+    "caveman",
+    "compression",
+    "token-optimization"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "peerDependencies": {
+    "@opencode-ai/plugin": "*"
+  }
+}
