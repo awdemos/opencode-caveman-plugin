@@ -90,6 +90,40 @@ opencode-caveman-plugin/
 └── README.md
 ```
 
+## Benefits Study
+
+A detailed evaluation of Caveman mode reveals important nuances about its actual impact on token usage and cognitive load.
+
+### Core Quantitative Findings
+
+- **Visible output reduction**: ~50% versus a simple "Answer concisely." baseline (not the 65–75% claimed in some documentation), based on a 10-question evaluation.
+- **System prompt overhead**: The full Caveman ruleset adds **896 input tokens per turn** (or 3,409 if all skills are injected). This plugin uses a **minimal ~150–250 token ruleset** to minimize overhead.
+- **Break-even analysis**: With the full 896-token ruleset, you need approximately **9 turns** to break even on visible tokens. With this plugin's minimal ruleset, break-even is approximately **2 turns**.
+
+| Aspect | Finding |
+|--------|---------|
+| Visible output reduction | ~50% vs "Answer concisely." |
+| Claimed reduction | 65–75% (not supported by eval) |
+| System prompt overhead | 896 tokens/turn (core), 3,409 (full), 163 (minimal) |
+| Avg visible tokens saved/turn | ~102 |
+| Break-even (core rules) | ~9 turns on visible tokens only |
+
+### Important Caveats
+
+- The evaluation **only measures visible output tokens**, ignoring:
+  - The system prompt overhead sent every turn
+  - Hidden "thinking" tokens (billed at the same rate)
+- If hidden reasoning tokens remain verbose, **actual dollar savings may be significantly smaller** than visible compression suggests.
+- The study was **Claude-only**; generalization to other models is unknown.
+
+### Cognitive Benefits
+
+The most solid benefit may be **cognitive rather than monetary**: denser, less wordy answers can reduce reading load for experienced developers who don't need hedging or didactic prose. However, this is currently hypothetical — there's no controlled study on time-to-comprehension or signal-to-noise ratio.
+
+### Bottom Line
+
+**Caveman definitely compresses visible text, but with substantial system-prompt overhead and unknown effects on hidden reasoning. This plugin mitigates the overhead by using a minimal ruleset.**
+
 ## License
 
 MIT
