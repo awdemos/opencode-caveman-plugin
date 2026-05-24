@@ -23,5 +23,13 @@
   },
   "peerDependencies": {
     "@opencode-ai/plugin": "*"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awdemos/opencode-caveman-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/awdemos/opencode-caveman-plugin/issues"
+  },
+  "homepage": "https://github.com/awdemos/opencode-caveman-plugin#readme"
 }

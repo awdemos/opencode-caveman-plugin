@@ -34,7 +34,7 @@ declare module '@opencode-ai/plugin' {
   export interface PluginHooks {
     event?: (args: { event: PluginEvent }) => Promise<void> | void
     'chat.params'?: (
-      meta: { model: string; provider: string; message: unknown },
+      meta: { model?: string; provider: string; message: unknown },
       params: ChatParams,
     ) => Promise<void> | void
   }
