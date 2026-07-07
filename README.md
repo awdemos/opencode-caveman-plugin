@@ -4,13 +4,15 @@ A global OpenCode plugin that adds a **"Caveman mode"** toggle per project. When
 
 ## Features
 
-- **Three intensity levels**: `low` | `medium` | `high`
-- **Chat commands**: `@caveman on`, `@caveman off`, `@caveman low|medium|high`
-- **Config persistence**: settings saved per-project in `opencode.json`
+- **Three intensity levels**: `low` | `medium` | `high` (aliases: `lite` | `full` | `ultra`)
+- **Chat commands**: `@caveman on|off|low|medium|high`, plus natural-language toggles
 - **Minimal token overhead**: ruleset tuned to ~150–250 tokens (not 800+)
-- **Kimi-aware**: optionally biases model selection toward `kimi-k2.6`
+- **Modern OpenCode hooks**: `event` (`session.created`), `chat.message`, `experimental.chat.system.transform`
+- **Per-project persistence**: state is saved in `.opencode/caveman.json` inside each project directory
 
 ## Installation
+
+### Project-local (copy the built file)
 
 1. **Copy the plugin file** into your project's `.opencode/plugin/` directory:
 
@@ -19,47 +21,90 @@ A global OpenCode plugin that adds a **"Caveman mode"** toggle per project. When
    cp dist/caveman.js .opencode/plugin/caveman.mjs
    ```
 
-   Or use the TypeScript source directly if OpenCode supports `.ts` plugins:
-
-   ```bash
-   cp src/caveman.ts .opencode/plugin/caveman.ts
-   ```
-
 2. **Restart OpenCode** or run its "reload plugins" command.
 
-3. **Configure** via `opencode config edit`:
+### Global config (recommended)
 
-   ```json
-   {
-     "caveman": {
-       "enabled": true,
-       "intensity": "medium"
-     }
-   }
-   ```
+Add the plugin path to your OpenCode config (`~/.config/opencode/opencode.json` or your dotfiles-managed `conf/opencode/opencode.json`):
+
+```json
+"plugin": [
+  "<path-to-opencode-caveman-plugin>"
+]
+```
+
+If your dotfiles repo and this plugin repo are siblings under your home directory, you can use a relative path from the config file location:
+
+```json
+"plugin": [
+  "../../../opencode-caveman-plugin"
+]
+```
+
+### Enable by default
+
+Pass options when registering the plugin so Caveman mode is on from the start of every project:
+
+```json
+"plugin": [
+  ["<path-to-opencode-caveman-plugin>", { "enabled": true, "intensity": "medium" }]
+]
+```
+
+Valid options:
+- `enabled`: `true` or `false`
+- `intensity`: `"low"`, `"medium"`, or `"high"` (aliases like `"lite"`/`"full"`/`"ultra"` also accepted)
+
+Chat toggles always override the default and are saved to `.opencode/caveman.json` per project.
 
 ## Usage
 
-### Chat Commands
+### Natural-Language Toggles (recommended)
+
+The `chat.message` hook reads your plain-text prompts and flips Caveman mode on or off. These work without any slash-command setup:
+
+| Phrase | Effect |
+|--------|--------|
+| `turn on caveman` / `activate caveman` / `talk like caveman` | Enable Caveman mode |
+| `stop caveman` / `disable caveman` / `normal mode` | Disable Caveman mode |
+| `Activate caveman mode: lite` / `: ultra` | Enable + set intensity alias |
+
+### `@caveman` text commands
+
+If your OpenCode client delivers `@caveman ...` as a plain text message (not as an agent mention), the plugin also recognizes:
 
 | Command | Effect |
 |---------|--------|
 | `@caveman on` | Enable Caveman mode with current intensity |
 | `@caveman off` | Disable Caveman mode |
-| `@caveman low` | Enable + set intensity to low |
-| `@caveman medium` | Enable + set intensity to medium |
-| `@caveman high` | Enable + set intensity to high |
+| `@caveman low` / `@caveman lite` | Enable + set intensity to low |
+| `@caveman medium` / `@caveman full` | Enable + set intensity to medium |
+| `@caveman high` / `@caveman ultra` | Enable + set intensity to high |
+
+If `@caveman` is intercepted by OpenCode as a mention, use the natural-language phrases above instead.
 
 ### Intensity Levels
 
-- **Low**: Keep responses concise but natural. Drop hedging and filler when safe.
-- **Medium**: Aggressively compress language. Short direct phrases, bullet lists, no articles.
-- **High**: Maximum compression. Telegraphic style like notes to an expert engineer.
+- **Low** (`lite`): Keep responses concise but natural. Drop hedging and filler when safe.
+- **Medium** (`full`): Aggressively compress language. Short direct phrases, bullet lists, no articles.
+- **High** (`ultra`): Maximum compression. Telegraphic style like notes to an expert engineer.
 
 All levels preserve:
 - Code blocks, commands, API signatures
 - Safety warnings and constraints
 - Step-by-step procedures
+
+## Persistence
+
+State is saved per project in `<project>/.opencode/caveman.json`. The file is created automatically when you first toggle Caveman mode and stores `enabled` and `intensity`.
+
+Precedence is:
+1. **Chat toggle** (highest) — written back to the config file.
+2. **Saved project config** — from `.opencode/caveman.json`.
+3. **Plugin registration options** — the default when no project config exists.
+4. **Built-in fallback** — disabled, intensity `medium`.
+
+This means you can turn Caveman on by default via options (see [Enable by default](#enable-by-default)) and still disable it per project with a chat command.
 
 ## Development
 
@@ -82,8 +127,7 @@ npm run watch
 ```
 opencode-caveman-plugin/
 ├── src/
-│   ├── caveman.ts      # Plugin implementation
-│   └── types.d.ts      # OpenCode plugin API type stubs
+│   └── caveman.ts      # Plugin implementation
 ├── dist/               # Compiled JS output (after build)
 ├── package.json
 ├── tsconfig.json

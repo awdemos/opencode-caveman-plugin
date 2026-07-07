@@ -19,6 +19,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^26.1.0",
     "typescript": "^5.4.0"
   },
   "peerDependencies": {
